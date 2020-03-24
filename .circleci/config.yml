@@ -54,7 +54,7 @@ jobs:
           path: _build/
 
       - run:
-          name: Files changed:
+          name: Files changed
           command: |
             bash .circleci/files-changed.sh
 
