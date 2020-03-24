@@ -13,9 +13,7 @@ pip-run: &pip-install
   command: |
     python3 -m venv venv
     . venv/bin/activate
-    pip install -r pip-requirements.txt
-    pip install sphinx pytest
-    pip install sphinx-astropy sphinx-bootstrap-theme nbconvert==5.6.1
+    pip install -r requirements-dev.txt
 
 jobs:
 
@@ -40,11 +38,12 @@ jobs:
           keys:
             - astropy-cache
 
-      - run:
-          name: Build documentation
-          command: |
-            . venv/bin/activate
-            make html
+      # - run:
+      #     name: Build documentation
+      #     command: |
+      #       . venv/bin/activate
+      #       nbconvert execute --timeout=600 --flatten --build-path=. -v notebooks/
+      #       nbconvert convert --flatten --build-path=. -v notebooks/
 
       - save_cache:
           key: astropy-cache
@@ -52,17 +51,22 @@ jobs:
             - ~/.astropy/cache/
 
       - store_artifacts:
-          path: build/html
+          path: _build/
+
+      - run:
+          name: Files changed:
+          command: |
+            bash .circleci/files-changed.sh
 
       - run:
           name: Built documentation is available at
           command: |
-            DOCS_URL="${CIRCLE_BUILD_URL}/artifacts/${CIRCLE_NODE_INDEX}/${CIRCLE_WORKING_DIRECTORY/#\~/$HOME}/build/html/index.html"; echo $DOCS_URL
+            DOCS_URL="${CIRCLE_BUILD_URL}/artifacts/${CIRCLE_NODE_INDEX}/${CIRCLE_WORKING_DIRECTORY/#\~/$HOME}/_build/"; echo $DOCS_URL
 
-      - run:
-          name: Push to gh-pages branch
-          command: |
-            bash .circleci/gh-pages-push.sh
+      # - run:
+      #     name: Push to gh-pages branch
+      #     command: |
+      #       bash .circleci/gh-pages-push.sh
 
 
 notify:
