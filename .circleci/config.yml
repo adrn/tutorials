@@ -17,6 +17,26 @@ pip-run: &pip-install
 
 jobs:
 
+  # Execute notebook files changed in PR:
+  execute_changed:
+    docker:
+      - image: circleci/python:3.7
+
+    branches:
+      ignore:
+        - gh-pages
+
+    steps:
+      - checkout
+      - run: *apt-install # run the apt install defined above
+      - run: *pip-install # run the pip install defined above
+      - run:
+          name: Execute files changed
+          command: |
+            bash .circleci/files-changed.sh
+            # TODO: bash run shit with $TUTORIALS_FILES_CHANGED
+
+  # Build all pages:
   build:
     docker:
       - image: circleci/python:3.7
@@ -24,7 +44,6 @@ jobs:
     branches:
       ignore:
         - gh-pages
-        - rst
 
     steps:
       - checkout
@@ -38,12 +57,12 @@ jobs:
           keys:
             - astropy-cache
 
-      # - run:
-      #     name: Build documentation
-      #     command: |
-      #       . venv/bin/activate
-      #       nbconvert execute --timeout=600 --flatten --build-path=. -v notebooks/
-      #       nbconvert convert --flatten --build-path=. -v notebooks/
+      - run:
+          name: Build documentation
+          command: |
+            . venv/bin/activate
+            nbconvert execute --timeout=600 --flatten --build-path=. -v notebooks/
+            nbconvert convert --flatten --build-path=. -v notebooks/
 
       - save_cache:
           key: astropy-cache
@@ -67,6 +86,16 @@ jobs:
       #     name: Push to gh-pages branch
       #     command: |
       #       bash .circleci/gh-pages-push.sh
+
+
+workflows:
+  version: 2
+  build_and_test:
+    jobs:
+      - execute_changed
+      - build:
+          requires:
+            - execute_changed
 
 
 notify:
