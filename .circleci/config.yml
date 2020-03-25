@@ -29,6 +29,7 @@ jobs:
       - run:
           name: Execute files changed
           command: |
+            . venv/bin/activate
             bash .circleci/files-changed.sh
             nbstatic execute --timeout=600 --flatten --build-path=. -v $TUTORIALS_FILES_CHANGED
 
