@@ -31,7 +31,7 @@ jobs:
           command: |
             . venv/bin/activate
             bash .circleci/files-changed.sh
-            nbstatic execute --timeout=600 --flatten --build-path=. -v $TUTORIALS_FILES_CHANGED
+            echo "$TUTORIALS_FILES_CHANGED" | nbstatic execute --timeout=600 --flatten --build-path=. -v
 
   # Build all pages:
   build:
