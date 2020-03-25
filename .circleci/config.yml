@@ -53,8 +53,8 @@ jobs:
           name: Build documentation
           command: |
             . venv/bin/activate
-            nbconvert execute --timeout=600 --flatten --build-path=. -v notebooks/
-            nbconvert convert --flatten --build-path=. -v notebooks/
+            nbstatic execute --timeout=600 --flatten --build-path=. -v notebooks/
+            nbstatic convert --flatten --build-path=. -v notebooks/
 
       - save_cache:
           key: astropy-cache
