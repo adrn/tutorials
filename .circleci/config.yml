@@ -30,7 +30,7 @@ jobs:
           name: Execute files changed
           command: |
             bash .circleci/files-changed.sh
-            # TODO: bash run shit with $TUTORIALS_FILES_CHANGED
+            nbstatic execute --timeout=600 --flatten --build-path=. -v $TUTORIALS_FILES_CHANGED
 
   # Build all pages:
   build:
