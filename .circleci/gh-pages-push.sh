@@ -4,8 +4,8 @@ if [[ -z $CIRCLE_PULL_REQUEST ]] ; then
     echo "Not a pull request: pushing website to gh-pages branch."
     git clone git@github.com:adrn/tutorials.git gh-pages
     cd gh-pages
+    rm -rf *
     git checkout --orphan gh-pages
-    rm -rf .
     cp ../_build/* ./
     cp ../.gitignore ./
     cp -R ../_static ./
