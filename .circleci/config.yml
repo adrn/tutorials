@@ -61,7 +61,7 @@ jobs:
             - astropy-cache
 
       - run:
-          name: Build documentation
+          name: Execute and convert tutorials
           command: |
             . venv/bin/activate
             << pipeline.parameters.EXECUTE >> notebooks/
@@ -76,12 +76,7 @@ jobs:
           path: _build/
 
       - run:
-          name: Files changed
-          command: |
-            bash .circleci/files-changed.sh
-
-      - run:
-          name: Built documentation is available at
+          name: HTML tutorials are available at
           command: |
             DOCS_URL="${CIRCLE_BUILD_URL}/artifacts/${CIRCLE_NODE_INDEX}/${CIRCLE_WORKING_DIRECTORY/#\~/$HOME}/_build/"; echo $DOCS_URL
 
