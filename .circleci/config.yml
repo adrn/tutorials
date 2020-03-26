@@ -1,6 +1,14 @@
-# Python CircleCI 2.0 configuration file
-# Check https://circleci.com/docs/2.0/language-python/ for more details
-version: 2
+version: 2.1
+
+
+parameters:
+  EXECUTE:
+    type: string
+    default: "nbstatic execute --timeout=600 --flatten --build-path=. -v"
+  CONVERT:
+    type: string
+    default: "nbstatic convert --flatten --build-path=. -v"
+
 
 apt-run: &apt-install
   name: Install apt packages
@@ -8,12 +16,14 @@ apt-run: &apt-install
     sudo apt-get update
     sudo apt-get install build-essential pandoc
 
+
 pip-run: &pip-install
   name: Install Python dependencies
   command: |
     python3 -m venv venv
     . venv/bin/activate
     pip install -r requirements-dev.txt
+
 
 jobs:
 
@@ -31,7 +41,7 @@ jobs:
           command: |
             . venv/bin/activate
             bash .circleci/files-changed.sh
-            echo "$TUTORIALS_FILES_CHANGED" | nbstatic execute --timeout=600 --flatten --build-path=. -v
+            echo "$TUTORIALS_FILES_CHANGED" | << pipeline.parameters.EXECUTE >>
 
   # Build all pages:
   build:
@@ -54,8 +64,8 @@ jobs:
           name: Build documentation
           command: |
             . venv/bin/activate
-            nbstatic execute --timeout=600 --flatten --build-path=. -v notebooks/
-            nbstatic convert --flatten --build-path=. -v notebooks/
+            << pipeline.parameters.EXECUTE >> notebooks/
+            << pipeline.parameters.CONVERT >> notebooks/
 
       - save_cache:
           key: astropy-cache
