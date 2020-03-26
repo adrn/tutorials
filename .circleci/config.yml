@@ -52,7 +52,7 @@ jobs:
       - checkout
       - add_ssh_keys: # add GitHub SSH keys
           fingerprints:
-            - 32:53:df:4a:53:71:25:8b:73:42:71:c8:57:8a:3f:f7
+            - 65:02:66:65:5d:50:70:61:c7:17:35:08:26:5f:56:6e
       - run: *apt-install # run the apt install defined above
       - run: *pip-install # run the pip install defined above
 
@@ -85,10 +85,10 @@ jobs:
           command: |
             DOCS_URL="${CIRCLE_BUILD_URL}/artifacts/${CIRCLE_NODE_INDEX}/${CIRCLE_WORKING_DIRECTORY/#\~/$HOME}/_build/"; echo $DOCS_URL
 
-      # - run:
-      #     name: Push to gh-pages branch
-      #     command: |
-      #       bash .circleci/gh-pages-push.sh
+      - run:
+          name: Push to gh-pages branch
+          command: |
+            bash .circleci/gh-pages-push.sh
 
 
 workflows:
