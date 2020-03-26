@@ -78,7 +78,7 @@ jobs:
       - run:
           name: HTML tutorials are available at
           command: |
-            DOCS_URL="${CIRCLE_BUILD_URL}/artifacts/${CIRCLE_NODE_INDEX}/${CIRCLE_WORKING_DIRECTORY/#\~/$HOME}/_build/"; echo $DOCS_URL
+            DOCS_URL="${CIRCLE_BUILD_URL}/artifacts/${CIRCLE_NODE_INDEX}/_build/"; echo $DOCS_URL
 
       - run:
           name: Push to gh-pages branch
