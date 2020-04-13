@@ -7,7 +7,9 @@ parameters:
     default: "nbstatic execute --timeout=600 --flatten --build-path=. -v"
   CONVERT:
     type: string
-    default: "nbstatic convert --flatten --build-path=. -v"
+    default: |
+      nbstatic convert --flatten --build-path=. -v \
+        --make-index --index-template=_static/index.tpl
 
 
 apt-run: &apt-install
