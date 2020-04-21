@@ -1,0 +1,110 @@
+version: 2.1
+
+
+parameters:
+  EXECUTE:
+    type: string
+    default: "nbcollection execute --timeout=600 --flatten --build-path=. -v"
+  CONVERT:
+    type: string
+    default: "nbcollection convert --flatten --build-path=. -v --make-index --index-template=_static/index.tpl"
+
+
+apt-run: &apt-install
+  name: Install apt packages
+  command: |
+    sudo apt-get update
+    sudo apt-get install build-essential pandoc
+
+
+pip-run: &pip-install
+  name: Install Python dependencies
+  command: |
+    python3 -m venv venv
+    . venv/bin/activate
+    pip install -r requirements-dev.txt --progress-bar off
+
+
+jobs:
+
+  # Execute notebook files changed in PR:
+  execute_changed:
+    docker:
+      - image: circleci/python:3.7
+
+    steps:
+      - checkout
+      - run: *apt-install # run the apt install defined above
+      - run: *pip-install # run the pip install defined above
+      - run:
+          name: Execute files changed
+          command: |
+            . venv/bin/activate
+            bash .circleci/files-changed.sh
+            echo "$TUTORIALS_FILES_CHANGED" | << pipeline.parameters.EXECUTE >>
+
+  # Build all pages:
+  build:
+    docker:
+      - image: circleci/python:3.7
+
+    steps:
+      - checkout
+      - add_ssh_keys: # add GitHub SSH keys
+          fingerprints:
+            - 65:02:66:65:5d:50:70:61:c7:17:35:08:26:5f:56:6e
+      - run: *apt-install # run the apt install defined above
+      - run: *pip-install # run the pip install defined above
+
+      - restore_cache:
+          keys:
+            - astropy-cache
+
+      - run:
+          name: Execute and convert tutorials
+          command: |
+            . venv/bin/activate
+            << pipeline.parameters.EXECUTE >> notebooks/
+            << pipeline.parameters.CONVERT >> notebooks/
+
+      - save_cache:
+          key: astropy-cache
+          paths:
+            - ~/.astropy/cache/
+
+      - store_artifacts:
+          path: _build/
+
+      - run:
+          name: HTML tutorials are available at
+          command: |
+            DOCS_URL="${CIRCLE_BUILD_URL}/artifacts/${CIRCLE_NODE_INDEX}/_build/"; echo $DOCS_URL
+
+      - run:
+          name: Push to gh-pages branch
+          command: |
+            bash .circleci/gh-pages-push.sh
+
+
+workflows:
+  version: 2
+  build_and_test:
+    jobs:
+      - execute_changed:
+          filters:
+            branches:
+              ignore:
+                - gh-pages
+
+      - build:
+          requires:
+            - execute_changed
+          filters:
+            branches:
+              ignore:
+                - gh-pages
+
+
+notify:
+  webhooks:
+    - url: https://giles.cadair.dev/circleci

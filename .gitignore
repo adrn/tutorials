@@ -1,0 +1,13 @@
+.ipynb_checkpoints/
+_build/
+IPython-*
+*.fits*
+*.gz
+*.pdf
+*.jpg
+*.pyc
+*.tex
+.DS_Store
+
+notebooks/color-excess/mastDownload/
+notebooks/FITS-cubes/Maps/
