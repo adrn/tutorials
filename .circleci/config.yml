@@ -4,10 +4,10 @@ version: 2.1
 parameters:
   EXECUTE:
     type: string
-    default: "nbstatic execute --timeout=600 --flatten --build-path=. -v"
+    default: "nbcollection execute --timeout=600 --flatten --build-path=. -v"
   CONVERT:
     type: string
-    default: "nbstatic convert --flatten --build-path=. -v --make-index --index-template=_static/index.tpl"
+    default: "nbcollection convert --flatten --build-path=. -v --make-index --index-template=_static/index.tpl"
 
 
 apt-run: &apt-install
